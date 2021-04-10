@@ -1,0 +1,6 @@
+{
+    "env": {
+        "MONGO_ATLAS_PW": "337337337337337rateb",
+        "JWT_KEY": "Make-e-Me is better than Doordash"
+    }
+}
