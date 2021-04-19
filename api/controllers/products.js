@@ -23,7 +23,9 @@ exports.products_create_product = (req, res, next) => {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
         price: req.body.price,
-        productImage: req.file.path
+        productImage: req.file.path,
+        delivery: req.body.delivery,
+        description: req.body.description
     });
     product
     .save()
@@ -33,6 +35,8 @@ exports.products_create_product = (req, res, next) => {
             createdProduct: {
                 name: result.name,
                 price: result.price,
+                delivery: result.delivery,
+                description: result.description,
                 _id: result._id,
                 productImage: result.productImage
             }

@@ -11,6 +11,7 @@ exports.user_signup = (req, res, next) => {
                 message: "account with address already exists"
             })
         } else {
+            console.log(req.body)
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err) {
                     return res.status(500).json({error: err})
@@ -18,11 +19,14 @@ exports.user_signup = (req, res, next) => {
                     const user = new User({
                         _id: mongooose.Types.ObjectId(),
                         email: req.body.email ,
-                        password: hash
+                        password: hash,
+                        address: req.body.address,
+                        phone: req.body.phone,
+                        fullName: req.body.fullName,
+                        accountType: req.body.accountType
                     })
                     user.save()
                     .then(result => {
-                        console.log(result)
                         res.status(201).json({
                             message: "User Created"
                         })
@@ -55,15 +59,16 @@ exports.user_login = (req, res, next) => {
             if (resp) {
                 const token = jwt.sign({
                     email: user[0].email,
-                    id: user[0]._id
+                    accountType: user[0].accountType,
+                    id: user[0]._id,
                 },
                 process.env.JWT_KEY,
                 {
                     expiresIn: '1h'
                 })
-                console.log(user)
                 return res.status(200).json({
                     message: "Auth Successful",
+                    accountType: user[0].accountType,
                     token: token
                 })
             }
