@@ -48,7 +48,7 @@ exports.products_create_product = (req, res, next) => {
     });   
 }
 
-exports.products_get_product = (req, res, next) => {
+exports.products_get_product_by_id = (req, res, next) => {
     const id = req.params.productId;
     Product.findById(id)
     .select("-__v")
@@ -65,6 +65,23 @@ exports.products_get_product = (req, res, next) => {
     .catch(e => {
         console.log(e)
         res.status(500).json({error: e})
+    })
+}
+
+exports.products_query_products_by_name = (req, res, next) => {
+    const name = req.params.name;
+    Product.find({name: name.toString()})
+    .select("-__v")
+    .exec()
+    .then(doc => {
+        const response = {
+            count: doc.length,
+            products: doc
+        }
+        res.status(200).json(response)
+    })
+    .catch(err => {
+        res.status(500).json({error: err})
     })
 }
 
