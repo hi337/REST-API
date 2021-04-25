@@ -18,6 +18,8 @@ const ProductsController = require('../controllers/products')
 
 router.get('/', ProductsController.products_get_all)
 
+router.get("/chefId", checkAuth, ProductsController.products_get_chef_products)
+
 router.post('/', checkAuth, upload.single('productImage'), ProductsController.products_create_product)
 
 router.get('/:productId', ProductsController.products_get_product_by_id)

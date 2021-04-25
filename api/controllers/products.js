@@ -18,6 +18,22 @@ exports.products_get_all = (req, res, next) => {
     })
 }
 
+exports.products_get_chef_products = (req, res, next) => {
+    let id = req.userData.id
+    console.log(id)
+    Product.find({"chefId": id.toString()})
+    .select("-__v")
+    .exec()
+    .then(docs => {
+        const response = {
+            count: docs.length,
+            products: docs
+        }
+        res.status(200).json(response)
+    })
+    .catch(err => {res.status(500).json({error: err}); console.log(err)})
+}
+
 exports.products_create_product = (req, res, next) => {
     const product = new Product({
         _id: mongoose.Types.ObjectId(),
@@ -25,7 +41,8 @@ exports.products_create_product = (req, res, next) => {
         price: req.body.price,
         productImage: req.file.path,
         delivery: req.body.delivery,
-        description: req.body.description
+        description: req.body.description,
+        chefId: req.userData.id
     });
     product
     .save()
@@ -38,9 +55,11 @@ exports.products_create_product = (req, res, next) => {
                 delivery: result.delivery,
                 description: result.description,
                 _id: result._id,
-                productImage: result.productImage
+                productImage: result.productImage,
+                chefId: result.chefId
             }
         })
+        console.log(result.chefId)
     })
     .catch(err => {
         console.log(err)
@@ -69,8 +88,8 @@ exports.products_get_product_by_id = (req, res, next) => {
 }
 
 exports.products_query_products_by_name = (req, res, next) => {
-    const name = req.params.name;
-    Product.find({name: name.toString()})
+    let name = req.params.name;
+    Product.fuzzySearch(name.toString(), (err, prods) => {console.log(prods, err)})
     .select("-__v")
     .exec()
     .then(doc => {
