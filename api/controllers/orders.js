@@ -1,4 +1,4 @@
-const mongooose = require('mongoose')
+const mongoose = require('mongoose')
 const Order = require('../models/order')
 const Product = require('../models/product')
 
@@ -27,9 +27,11 @@ exports.orders_create_order = (req, res, next) => {
             });
         }
         const order = new Order({
-            _id: mongooose.Types.ObjectId(),
+            _id: mongoose.Types.ObjectId(),
             quantity: req.body.quantity,
-            product: req.body.productId
+            product: req.body.productId,
+            idOfUser: req.userData.id,
+            idOfChef: product.chefId
         });
         return order.save();
     })
@@ -42,7 +44,9 @@ exports.orders_create_order = (req, res, next) => {
             order: {
                 _id: result._id,
                 product: result.product,
-                quantity: result.quantity
+                quantity: result.quantity,
+                idOfUser: result.idOfUser,
+                idOfChef: result.idOfChef
             }
         });
     })
@@ -88,4 +92,40 @@ exports.orders_delete_order = (req, res, next) => {
     .catch(err => {
         res.status(500).json({error: err})
     })
+}
+
+exports.orders_get_chef_orders = (req, res, next) => {
+    let id = req.userData.id
+    Order.find({"idOfChef": id.toString()})
+    .select("-__v")
+    .exec()
+    .then(docs => {
+        if (res.statusCode === 404) {
+            return res
+        }
+        const response = {
+            count: docs.length,
+            orders: docs
+        }
+        res.status(200).json(response)
+    })
+    .catch(err => {res.status(500).json({error: err}); console.log(err)})
+}
+
+exports.orders_get_user_orders = (req, res, next) => {
+    let id = req.userData.id
+    Order.find({"idOfUser": id.toString()})
+    .select("-__v")
+    .exec()
+    .then(docs => {
+        if (res.statusCode === 404) {
+            return res
+        }
+        const response = {
+            count: docs.length,
+            products: docs
+        }
+        res.status(200).json(response)
+    })
+    .catch(err => {res.status(500).json({error: err}); console.log(err)})
 }

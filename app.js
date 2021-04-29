@@ -46,11 +46,10 @@ app.use((res, req, next) => {
     next(error);
 })
 app.use((error, req, res, next) => {
+    console.log(error)
     res.status(error.status || 500);
     res.json({
-        error: {
-            message: error.message
-        }
+        error: error
     })
 });
 

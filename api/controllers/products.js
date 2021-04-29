@@ -20,7 +20,6 @@ exports.products_get_all = (req, res, next) => {
 
 exports.products_get_chef_products = (req, res, next) => {
     let id = req.userData.id
-    console.log(id)
     Product.find({"chefId": id.toString()})
     .select("-__v")
     .exec()
