@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Product = require("../models/product");
+const fs = require("fs")
 
 exports.products_get_all = (req, res, next) => {
     Product.find()
@@ -105,9 +106,18 @@ exports.products_query_products_by_name = (req, res, next) => {
 
 exports.products_update_product = (req, res, next) => {
     const id = req.params.productId;
-    Product.findByIdAndUpdate(id, {$set: req.body}, {new: true})
+    Product.findByIdAndUpdate(id, {
+        name: req.body.name,
+        price: req.body.price,
+        delivery: req.body.delivery,
+        description: req.body.description,
+        productImage: req.file.path
+    }, {new: true})
     .select("-__v")
-    .then(result => res.status(200).json(result))
+    .then(result => res.status(200).json({
+        message: "Product updated",
+        updatedProduct: result
+    }))
     .catch(e => res.status(500).json({error: e}))
 }
 
@@ -120,6 +130,10 @@ exports.products_delete = (req, res, next) => {
         res.status(200).json({
             message: "Product deleted",
             deletedProduct: r
+        })
+        const productImage = r.productImage
+        fs.unlink(productImage, (err) => {
+            if (err) console.log(err)
         })
     })
     .catch(e => {

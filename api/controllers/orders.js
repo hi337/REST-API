@@ -60,6 +60,7 @@ exports.orders_create_order = (req, res, next) => {
 
 exports.orders_get_order = (req, res, next) => {
     Order.findById(req.params.orderId).select("-__v")
+    .populate("product")
     .exec()
     .then(result => {
         res.status(200).json({
@@ -98,6 +99,7 @@ exports.orders_get_chef_orders = (req, res, next) => {
     let id = req.userData.id
     Order.find({"idOfChef": id.toString()})
     .select("-__v")
+    .populate("product")
     .exec()
     .then(docs => {
         if (res.statusCode === 404) {
@@ -116,6 +118,7 @@ exports.orders_get_user_orders = (req, res, next) => {
     let id = req.userData.id
     Order.find({"idOfUser": id.toString()})
     .select("-__v")
+    .populate("product")
     .exec()
     .then(docs => {
         if (res.statusCode === 404) {
@@ -123,7 +126,7 @@ exports.orders_get_user_orders = (req, res, next) => {
         }
         const response = {
             count: docs.length,
-            products: docs
+            orders: docs
         }
         res.status(200).json(response)
     })

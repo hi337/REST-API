@@ -26,7 +26,7 @@ router.get('/:productId', ProductsController.products_get_product_by_id)
 
 router.get('/q/:name', ProductsController.products_query_products_by_name)
 
-router.patch('/:productId', checkAuth, ProductsController.products_update_product)
+router.patch('/:productId', checkAuth, upload.single('productImage'), ProductsController.products_update_product)
 
 router.delete('/:productId', checkAuth, ProductsController.products_delete)
 
