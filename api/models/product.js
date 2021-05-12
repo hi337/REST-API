@@ -1,6 +1,5 @@
 const mongoose = require("mongoose")
 const mongoose_fuzzy = require('mongoose-fuzzy')
-const { products_update_product } = require("../controllers/products")
 
 const productSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -12,7 +11,7 @@ const productSchema = mongoose.Schema({
     chefId: { type: mongoose.Types.ObjectId, required: true }
 })
 
-productSchema.plugin(mongoose_fuzzy, {
+productSchema.plugin(mongoose_fuzzy, { 
     fields: ["name"]
 })
 

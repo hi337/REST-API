@@ -106,6 +106,23 @@ exports.products_query_products_by_name = (req, res, next) => {
 
 exports.products_update_product = (req, res, next) => {
     const id = req.params.productId;
+    let oldpath;
+
+        Product.findById(id)
+        .select("-__v")
+        .exec()
+        .then(doc => {
+            if (doc) {
+                oldpath = doc.productImage
+            } else {
+                res.status(404).json({error: "No Valid Entry Provided"})
+            }
+        })
+        .catch(e => {
+            console.log(e)
+            res.status(500).json({error: e})
+        })
+
     Product.findByIdAndUpdate(id, {
         name: req.body.name,
         price: req.body.price,
@@ -114,10 +131,16 @@ exports.products_update_product = (req, res, next) => {
         productImage: req.file.path
     }, {new: true})
     .select("-__v")
-    .then(result => res.status(200).json({
-        message: "Product updated",
-        updatedProduct: result
-    }))
+    .then(result => {
+        res.status(200).json({
+            message: "Product updated",
+            updatedProduct: result
+        })
+
+        fs.unlink(oldpath, (err) => {
+            if (err) console.log(err)
+        })
+    })
     .catch(e => res.status(500).json({error: e}))
 }
 

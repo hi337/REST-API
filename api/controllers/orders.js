@@ -26,10 +26,14 @@ exports.orders_create_order = (req, res, next) => {
                 message: 'Product not found'
             });
         }
+        const cost = product.price
+        const delivery = product.delivery
+        const quantity = req.body.quantity
         const order = new Order({
             _id: mongoose.Types.ObjectId(),
-            quantity: req.body.quantity,
+            quantity: quantity,
             product: req.body.productId,
+            totalCost: (cost * quantity) + delivery,
             idOfUser: req.userData.id,
             idOfChef: product.chefId
         });

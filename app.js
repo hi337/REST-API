@@ -12,6 +12,7 @@ mongoose.connect('mongodb+srv://hi337:' + process.env.MONGO_ATLAS_PW + '@make-e-
 {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false
 }
 )
 
