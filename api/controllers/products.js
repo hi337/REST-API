@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const Product = require("../models/product");
 const fs = require("fs")
+const fetch = require("node-fetch")
 
 exports.products_get_all = (req, res, next) => {
     Product.find()
@@ -34,37 +35,50 @@ exports.products_get_chef_products = (req, res, next) => {
     .catch(err => {res.status(500).json({error: err}); console.log(err)})
 }
 
-exports.products_create_product = (req, res, next) => {
-    const product = new Product({
-        _id: mongoose.Types.ObjectId(),
-        name: req.body.name,
-        price: req.body.price,
-        productImage: req.file.path,
-        delivery: req.body.delivery,
-        description: req.body.description,
-        chefId: req.userData.id
-    });
-    product
-    .save()
-    .then(result => {
-        res.status(201).json({
-            message: 'Created Product Successfully',
-            createdProduct: {
-                name: result.name,
-                price: result.price,
-                delivery: result.delivery,
-                description: result.description,
-                _id: result._id,
-                productImage: result.productImage,
-                chefId: result.chefId
-            }
+exports.products_create_product = async (req, res, next) => {
+
+    const namefilter = await fetch("https://www.purgomalum.com/service/containsprofanity?text="+req.body.name)
+    const descriptionfilter = await fetch("https://www.purgomalum.com/service/containsprofanity?text="+req.body.description)
+    const namevalue = await namefilter.text()
+    const descriptionvalue = await descriptionfilter.text()
+
+    if (namevalue === "false" && descriptionvalue === "false") {
+        const product = new Product({
+            _id: mongoose.Types.ObjectId(),
+            name: req.body.name,
+            price: req.body.price,
+            productImage: req.file.path,
+            delivery: req.body.delivery,
+            description: req.body.description,
+            chefId: req.userData.id
+        });
+        product
+        .save()
+        .then(result => {
+            res.status(201).json({
+                message: 'Created Product Successfully',
+                createdProduct: {
+                    name: result.name,
+                    price: result.price,
+                    delivery: result.delivery,
+                    description: result.description,
+                    _id: result._id,
+                    productImage: result.productImage,
+                    chefId: result.chefId
+                }
+            })
         })
-        console.log(result.chefId)
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json({error: err})
-    });   
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({error: err})
+        });
+    } else {
+        return res.status(500).json({
+            message: "Inappropriate values have been passed in the name or description fields! Try Again."
+        })
+    }
+
+       
 }
 
 exports.products_get_product_by_id = (req, res, next) => {
