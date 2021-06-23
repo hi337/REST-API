@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Return Url</title>
+</head>
+<body
+    <div id="header">
+        <h1>PayPal Form Complete!</h1>
+    </div>
+    <div id="not-validated" style="visibility: hidden;">
+        <h3>Before you can log into your Make-e-Me Chef account, please confirm your PayPal account's email address. Once you have done so, please log into your Make-e-Me account within 24 hours so your account becomes verified and you can start listing items!</h3>
+    </div>
+    <div id="validated" style="visibility: hidden;">
+        <h3>It seems your PayPal account and email has already been validated. If that is the case, you can now log in to your Make-e-Me Chef account! </h3>
+    </div>
+    <script>
+        let accountValidated = false;
+        let message;
+        if (accountValidated) {
+            message = document.getElementById("validated")
+        } else {
+            message = document.getElementById("not-validated")
+        }
+        message.style.visibility = "visible";
+    </script>
+</body>
+</html>

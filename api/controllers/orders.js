@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Order = require('../models/order')
 const Product = require('../models/product')
+const admin = require("firebase-admin")
 
 exports.orders_get_all = (req, res, next) => {
     Order.find()
@@ -29,11 +30,13 @@ exports.orders_create_order = (req, res, next) => {
         const cost = product.price
         const delivery = product.delivery
         const quantity = req.body.quantity
+        const totalPrice = (cost * quantity) + delivery
+        
         const order = new Order({
             _id: mongoose.Types.ObjectId(),
             quantity: quantity,
             product: req.body.productId,
-            totalCost: (cost * quantity) + delivery,
+            totalCost: totalPrice,
             idOfUser: req.userData.id,
             idOfChef: product.chefId
         });
